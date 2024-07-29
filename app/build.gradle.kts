@@ -1,6 +1,9 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+
+    // for JSON serialization & deserialization
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.8.10"
 }
 
 android {
@@ -70,6 +73,11 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     implementation(libs.retrofit) // actual Retrofit library - talks to restful APIs like the mars API
-    implementation(libs.converter.scalars) // Retrofit with Scalar Converter (returns the JSON response as a string)
+    // Retrofit with Kotlin serialization Converter
+    implementation(libs.retrofit2.kotlinx.serialization.converter)
+    implementation(libs.okhttp)
+
+    // for JSON serialization & deserialization
+    implementation(libs.kotlinx.serialization.json) // Kotlin serialization
 
 }
