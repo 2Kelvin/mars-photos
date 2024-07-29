@@ -25,7 +25,7 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
-    when(marsUiState) {
+    when (marsUiState) {
         is MarsUiState.Loading -> LoadingScreen(modifier = modifier.fillMaxWidth())
         is MarsUiState.Success -> {
             ResultScreen(
