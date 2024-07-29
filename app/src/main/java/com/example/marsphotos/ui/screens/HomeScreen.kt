@@ -19,7 +19,10 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
-    ResultScreen(marsUiState, modifier.padding(top = contentPadding.calculateTopPadding()))
+    ResultScreen(
+        marsUiState,
+        modifier.padding(top = contentPadding.calculateTopPadding())
+    )
 }
 
 /**

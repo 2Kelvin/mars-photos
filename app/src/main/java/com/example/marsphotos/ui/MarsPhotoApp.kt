@@ -28,9 +28,7 @@ fun MarsPhotosApp() {
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = { MarsTopAppBar(scrollBehavior = scrollBehavior) }
     ) {
-        Surface(
-            modifier = Modifier.fillMaxSize()
-        ) {
+        Surface(modifier = Modifier.fillMaxSize()) {
             val marsViewModel: MarsViewModel = viewModel()
             HomeScreen(
                 marsUiState = marsViewModel.marsUiState,

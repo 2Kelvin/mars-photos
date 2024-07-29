@@ -68,4 +68,8 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+    implementation(libs.retrofit) // actual Retrofit library - talks to restful APIs like the mars API
+    implementation(libs.converter.scalars) // Retrofit with Scalar Converter (returns the JSON response as a string)
+
 }
