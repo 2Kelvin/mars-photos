@@ -21,7 +21,7 @@ import java.io.IOException
  * the default state is 'loading'
  */
 sealed interface MarsUiState {
-    data class Success(val photos: MarsPhoto) : MarsUiState
+    data class Success(val photos: List<MarsPhoto>) : MarsUiState
     object Error : MarsUiState
     object Loading : MarsUiState
 }
@@ -58,7 +58,7 @@ class MarsViewModel(
         viewModelScope.launch {
             marsUiState = try {
                 // first mars photo object
-                MarsUiState.Success(marsPhotosRepository.getMarsPhotos()[0])
+                MarsUiState.Success(marsPhotosRepository.getMarsPhotos())
             } catch (e: IOException) {
                 MarsUiState.Error
             }

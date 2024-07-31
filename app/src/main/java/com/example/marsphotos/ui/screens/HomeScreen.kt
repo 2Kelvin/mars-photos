@@ -5,9 +5,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,6 +30,9 @@ import com.example.marsphotos.R
 import com.example.marsphotos.model.MarsPhoto
 import com.example.marsphotos.ui.theme.MarsPhotosTheme
 
+/**
+ * Mars app home screen displaying the grid of Mars photos.
+ */
 @Composable
 fun HomeScreen(
     marsUiState: MarsUiState,
@@ -32,7 +41,7 @@ fun HomeScreen(
 ) {
     when (marsUiState) {
         is MarsUiState.Loading -> LoadingScreen(modifier = modifier.fillMaxWidth())
-        is MarsUiState.Success -> MarsPhotoCard(photo = marsUiState.photos, modifier = modifier.fillMaxWidth())
+        is MarsUiState.Success -> PhotosGridScreen(photos = marsUiState.photos, modifier)
         is MarsUiState.Error -> ErrorScreen(modifier = modifier.fillMaxWidth())
     }
 }
@@ -75,16 +84,62 @@ fun ErrorScreen(modifier: Modifier = Modifier) {
 
 /**
  * Composable to display each Mars image fetched from the API
+ *
+ * There's a placeholder loading icon that displays as the app waits for the image to load.
+ * If an error was experienced during loading the image, an error icon is displayed.
  */
 @Composable
 fun MarsPhotoCard(photo: MarsPhoto, modifier: Modifier = Modifier) {
-    AsyncImage(
-        model = ImageRequest.Builder(context = LocalContext.current)
-            .data(photo.imgSrc)
-            .crossfade(true)
-            .build(),
-        contentDescription = stringResource(id = R.string.mars_photo),
-        contentScale = ContentScale.Crop,
-        modifier = Modifier.fillMaxWidth()
-    )
+    Card(
+        modifier = modifier,
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+    ) {
+        AsyncImage(
+            model = ImageRequest.Builder(context = LocalContext.current)
+                .data(photo.imgSrc)
+                .crossfade(true)
+                .build(),
+            error = painterResource(id = R.drawable.ic_broken_image),
+            placeholder = painterResource(id = R.drawable.loading_img),
+            contentDescription = stringResource(id = R.string.mars_photo),
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+/**
+ * Takes a list of fetched Mars photos from the API
+ * and displays each image in an adaptive LazyVerticalGrid.
+ *
+ * To keep track of each photo when scrolling and avoid losing scrolling state after configuration change,
+ * key is assigned each current photo's id.
+ */
+@Composable
+fun PhotosGridScreen(
+    photos: List<MarsPhoto>,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp)
+) {
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(minSize = 150.dp),
+        modifier = modifier.padding(4.dp).fillMaxWidth().aspectRatio(1.5f),
+        contentPadding = contentPadding
+    ) {
+        items(items = photos, key = { photo -> photo.id }) { eachPhoto ->
+            MarsPhotoCard(photo = eachPhoto)
+        }
+    }
+}
+
+/**
+ * Preview
+ */
+@Preview(showBackground = true)
+@Composable
+fun PhotosGridScreenPreview() {
+    MarsPhotosTheme {
+        val mockData = List(10) { MarsPhoto("$it", "") }
+        PhotosGridScreen(mockData)
+    }
 }
