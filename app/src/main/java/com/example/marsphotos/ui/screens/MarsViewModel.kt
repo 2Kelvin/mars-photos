@@ -11,6 +11,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.marsphotos.MarsPhotosApplication
 import com.example.marsphotos.data.MarsPhotosRepository
+import com.example.marsphotos.model.MarsPhoto
 import kotlinx.coroutines.launch
 import java.io.IOException
 
@@ -20,7 +21,7 @@ import java.io.IOException
  * the default state is 'loading'
  */
 sealed interface MarsUiState {
-    data class Success(val photos: String) : MarsUiState
+    data class Success(val photos: MarsPhoto) : MarsUiState
     object Error : MarsUiState
     object Loading : MarsUiState
 }
@@ -50,13 +51,14 @@ class MarsViewModel(
 
     /**
      * Gets Mars photos from the Mars API Retrofit service.
-     * and stores & returns these MarsPhoto objects in a list (listResult)
+     *
+     * Here we use the repository as the data source
      */
     private fun getMarsPhotos() {
         viewModelScope.launch {
             marsUiState = try {
-                val listResult = marsPhotosRepository.getMarsPhotos() // using the repository as a data source
-                MarsUiState.Success("Success: ${listResult.size} Mars photos retrieved")
+                // first mars photo object
+                MarsUiState.Success(marsPhotosRepository.getMarsPhotos()[0])
             } catch (e: IOException) {
                 MarsUiState.Error
             }

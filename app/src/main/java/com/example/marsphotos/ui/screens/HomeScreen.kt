@@ -12,11 +12,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.marsphotos.R
+import com.example.marsphotos.model.MarsPhoto
 import com.example.marsphotos.ui.theme.MarsPhotosTheme
 
 @Composable
@@ -27,14 +32,7 @@ fun HomeScreen(
 ) {
     when (marsUiState) {
         is MarsUiState.Loading -> LoadingScreen(modifier = modifier.fillMaxWidth())
-        is MarsUiState.Success -> {
-            ResultScreen(
-                photos = marsUiState.photos,
-                modifier
-                    .padding(top = contentPadding.calculateTopPadding())
-                    .fillMaxWidth()
-            )
-        }
+        is MarsUiState.Success -> MarsPhotoCard(photo = marsUiState.photos, modifier = modifier.fillMaxWidth())
         is MarsUiState.Error -> ErrorScreen(modifier = modifier.fillMaxWidth())
     }
 }
@@ -76,22 +74,17 @@ fun ErrorScreen(modifier: Modifier = Modifier) {
 }
 
 /**
- * ResultScreen displaying number of photos retrieved.
+ * Composable to display each Mars image fetched from the API
  */
 @Composable
-fun ResultScreen(photos: String, modifier: Modifier = Modifier) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = modifier
-    ) {
-        Text(text = photos)
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ResultScreenPreview() {
-    MarsPhotosTheme {
-        ResultScreen(stringResource(R.string.placeholder_result))
-    }
+fun MarsPhotoCard(photo: MarsPhoto, modifier: Modifier = Modifier) {
+    AsyncImage(
+        model = ImageRequest.Builder(context = LocalContext.current)
+            .data(photo.imgSrc)
+            .crossfade(true)
+            .build(),
+        contentDescription = stringResource(id = R.string.mars_photo),
+        contentScale = ContentScale.Crop,
+        modifier = Modifier.fillMaxWidth()
+    )
 }

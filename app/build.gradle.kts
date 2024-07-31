@@ -83,4 +83,7 @@ dependencies {
     // for JSON serialization & deserialization
     implementation(libs.kotlinx.serialization.json) // Kotlin serialization
 
+    // coil library
+    implementation(libs.coil.compose)
+
 }
