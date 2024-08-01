@@ -52,9 +52,9 @@ class MarsViewModel(
     /**
      * Gets Mars photos from the Mars API Retrofit service.
      *
-     * Here we use the repository as the data source
+     * The repository is used as the data source
      */
-    private fun getMarsPhotos() {
+    fun getMarsPhotos() {
         viewModelScope.launch {
             marsUiState = try {
                 // first mars photo object

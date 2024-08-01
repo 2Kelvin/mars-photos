@@ -2,7 +2,6 @@ package com.example.marsphotos.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
@@ -12,8 +11,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -36,13 +37,14 @@ import com.example.marsphotos.ui.theme.MarsPhotosTheme
 @Composable
 fun HomeScreen(
     marsUiState: MarsUiState,
+    retryAction: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     when (marsUiState) {
         is MarsUiState.Loading -> LoadingScreen(modifier = modifier.fillMaxWidth())
         is MarsUiState.Success -> PhotosGridScreen(photos = marsUiState.photos, modifier)
-        is MarsUiState.Error -> ErrorScreen(modifier = modifier.fillMaxWidth())
+        is MarsUiState.Error -> ErrorScreen(retryAction, modifier = modifier.fillMaxWidth())
     }
 }
 
@@ -64,7 +66,7 @@ fun LoadingScreen(modifier: Modifier = Modifier) {
  * shows an error icon & error message
  */
 @Composable
-fun ErrorScreen(modifier: Modifier = Modifier) {
+fun ErrorScreen(retryAction: () -> Unit, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.Center,
@@ -79,6 +81,9 @@ fun ErrorScreen(modifier: Modifier = Modifier) {
             text = stringResource(id = R.string.loading_failed),
             modifier = Modifier.padding(16.dp)
         )
+        Button(onClick = retryAction) {
+            Text(text = stringResource(id = R.string.retry))
+        }
     }
 }
 
@@ -92,6 +97,7 @@ fun ErrorScreen(modifier: Modifier = Modifier) {
 fun MarsPhotoCard(photo: MarsPhoto, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier,
+        shape = MaterialTheme.shapes.medium,
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
         AsyncImage(
@@ -123,23 +129,35 @@ fun PhotosGridScreen(
 ) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 150.dp),
-        modifier = modifier.padding(4.dp).fillMaxWidth().aspectRatio(1.5f),
+        modifier = modifier.padding(horizontal = 4.dp),
         contentPadding = contentPadding
     ) {
         items(items = photos, key = { photo -> photo.id }) { eachPhoto ->
-            MarsPhotoCard(photo = eachPhoto)
+            MarsPhotoCard(
+                photo = eachPhoto,
+                modifier = modifier
+                    .padding(4.dp)
+                    .fillMaxWidth()
+                    .aspectRatio(1.5f)
+            )
         }
     }
 }
 
-/**
- * Preview
- */
+/** Preview */
 @Preview(showBackground = true)
 @Composable
 fun PhotosGridScreenPreview() {
     MarsPhotosTheme {
         val mockData = List(10) { MarsPhoto("$it", "") }
         PhotosGridScreen(mockData)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ErrorScreenPreview() {
+    MarsPhotosTheme {
+        ErrorScreen(retryAction = {})
     }
 }
